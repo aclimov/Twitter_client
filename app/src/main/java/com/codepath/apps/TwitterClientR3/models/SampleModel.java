@@ -1,6 +1,6 @@
-package com.codepath.apps.restclienttemplate.models;
+package com.codepath.apps.TwitterClientR3.models;
 
-import com.codepath.apps.restclienttemplate.MyDatabase;
+import com.codepath.apps.TwitterClientR3.MyDatabase;
 import com.raizlabs.android.dbflow.annotation.Column;
 import com.raizlabs.android.dbflow.annotation.PrimaryKey;
 import com.raizlabs.android.dbflow.annotation.Table;
