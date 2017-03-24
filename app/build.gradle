@@ -42,13 +42,16 @@ dependencies {
 
 
 
+
+
+
     compile 'com.codepath.libraries:android-oauth-handler:1.1.0'
     compile 'com.android.support:appcompat-v7:25.2.0'
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'com.loopj.android:android-async-http:1.4.9'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     compile 'com.android.support:recyclerview-v7:25.2.0'
-
     compile 'org.parceler:parceler-api:1.1.6'
+    compile 'com.android.support:support-v4:24.2.1'
     annotationProcessor 'org.parceler:parceler:1.1.6'
 }
