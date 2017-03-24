@@ -9,6 +9,7 @@ import android.text.format.DateUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.parceler.Parcel;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -16,7 +17,12 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 
+@Parcel
 public class Tweet {
+
+    public void setBody(String body) {
+        this.body = body;
+    }
 
     private String body;
 
@@ -104,4 +110,6 @@ public class Tweet {
 
         return relativeDate;
     }
+
+
 }
