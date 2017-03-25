@@ -1,5 +1,11 @@
 package com.codepath.apps.TwitterClientR3.models;
 
+import com.codepath.apps.TwitterClientR3.MyDatabase;
+import com.raizlabs.android.dbflow.annotation.Column;
+import com.raizlabs.android.dbflow.annotation.PrimaryKey;
+import com.raizlabs.android.dbflow.annotation.Table;
+import com.raizlabs.android.dbflow.structure.BaseModel;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.parceler.Parcel;
@@ -8,14 +14,39 @@ import org.parceler.Parcel;
  * Created by alex_ on 3/21/2017.
  */
 
-@Parcel
-public class User {
+@Table(database = MyDatabase.class)
+@Parcel(analyze = User.class)
+public class User extends BaseModel{
 
     //List of attributes;
-
+    @Column
     private String name;
+
+    @Column
+    @PrimaryKey
     private long uid;
+
+    @Column
     private String screenName;
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setUid(long uid) {
+        this.uid = uid;
+    }
+
+    public void setScreenName(String screenName) {
+        this.screenName = screenName;
+    }
+
+    public void setProfileImageUrl(String profileImageUrl) {
+        this.profileImageUrl = profileImageUrl;
+    }
+
+    @Column
+    private String profileImageUrl;
 
     public String getName() {
         return name;
@@ -32,8 +63,6 @@ public class User {
     public String getProfileImageUrl() {
         return profileImageUrl;
     }
-
-    private String profileImageUrl;
 
     //deserialize the user json=> User
     public static User fromJsonObject(JSONObject jsonObject)

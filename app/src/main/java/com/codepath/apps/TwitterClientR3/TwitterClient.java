@@ -37,13 +37,7 @@ public class TwitterClient extends OAuthBaseClient {
 
 	// CHANGE THIS
 	// DEFINE METHODS for different API endpoints here
-	public void getInterestingnessList(AsyncHttpResponseHandler handler) {
-		String apiUrl = getApiUrl("?nojsoncallback=1&method=flickr.interestingness.getList");
-		// Can specify query string params directly or through RequestParams.
-		RequestParams params = new RequestParams();
-		params.put("format", "json");
-		client.get(apiUrl, params, handler);
-	}
+
 
 	public void getHomeTimeLine(long minId,AsyncHttpResponseHandler handler )
 	{
@@ -56,6 +50,7 @@ public class TwitterClient extends OAuthBaseClient {
 		}else{
 			params.put("max_id", minId);
 		}
+		params.put("tweet_mode","extended");
 		client.get(apiUrl,params,handler);
 	}
 
@@ -76,12 +71,19 @@ public class TwitterClient extends OAuthBaseClient {
 
 	public void createTweet(Tweet tweet, AsyncHttpResponseHandler handler)
 	{
-
 		String apiUrl = getApiUrl("statuses/update.json");
-
 		RequestParams params = new RequestParams();
 		params.put("status",tweet.getBody());
+		client.post(apiUrl,params,handler);
+	}
 
+	//in_reply_to_status_id
+
+	public void replyToTweet(Tweet tweetReplyTo, Tweet tweet,AsyncHttpResponseHandler handler){
+		String apiUrl = getApiUrl("statuses/update.json");
+		RequestParams params = new RequestParams();
+		params.put("status",tweet.getBody());
+		params.put("in_reply_to_status_id",tweet.getUid());
 		client.post(apiUrl,params,handler);
 	}
 

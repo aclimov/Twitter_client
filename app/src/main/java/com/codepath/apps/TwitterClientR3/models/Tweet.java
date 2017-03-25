@@ -1,10 +1,13 @@
 package com.codepath.apps.TwitterClientR3.models;
 
-/**
-
- */
-
 import android.text.format.DateUtils;
+
+import com.codepath.apps.TwitterClientR3.MyDatabase;
+import com.raizlabs.android.dbflow.annotation.Column;
+import com.raizlabs.android.dbflow.annotation.ForeignKey;
+import com.raizlabs.android.dbflow.annotation.PrimaryKey;
+import com.raizlabs.android.dbflow.annotation.Table;
+import com.raizlabs.android.dbflow.structure.BaseModel;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -16,15 +19,41 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Locale;
 
-
-@Parcel
-public class Tweet {
+@Table(database = MyDatabase.class)
+@Parcel(analyze = Tweet.class)
+public class Tweet extends BaseModel    {
 
     public void setBody(String body) {
         this.body = body;
     }
 
+    @Column
     private String body;
+
+    public void setUid(long uid) {
+        this.uid = uid;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public void setCreatedAt(String createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    @Column
+    @PrimaryKey
+    long uid;
+
+    @Column
+    @ForeignKey(saveForeignKeyModel = false)
+    User user;
+
+    @Column
+    String createdAt;
+
+    ArrayList<Media> mediaObjects;
 
     public String getBody() {
         return body;
@@ -42,24 +71,44 @@ public class Tweet {
         return createdAt;
     }
 
-    private long uid;
-    private User user;
-    private String createdAt;
-
     public String getTimestamp() {
         return getRelativeTimeAgo(createdAt);
     }
 
+    public String getRelativeTimeAgo(String rawJsonDate) {
 
+        String relativeDate = "";
+        if(rawJsonDate==null) return relativeDate;
+        String twitterFormat = "EEE MMM dd HH:mm:ss ZZZZZ yyyy";
+        SimpleDateFormat sf = new SimpleDateFormat(twitterFormat, Locale.ENGLISH);
+        sf.setLenient(true);
+
+
+        try {
+            long dateMillis = sf.parse(rawJsonDate).getTime();
+            relativeDate = DateUtils.getRelativeTimeSpanString(dateMillis,
+                    System.currentTimeMillis(), DateUtils.SECOND_IN_MILLIS).toString();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        return relativeDate;
+    }
 
     public static Tweet fromJson(JSONObject jsonObject){
         Tweet tweet = new Tweet();
         try {
-            tweet.body = jsonObject.getString("text");
+            String fullText =jsonObject.getString("full_text");
+            JSONArray range = jsonObject.getJSONArray("display_text_range");
+            tweet.body =fullText.substring((Integer)range.get(0),(Integer)range.get(1));
             tweet.uid = jsonObject.getLong("id");
             tweet.createdAt = jsonObject.getString("created_at");
-
             tweet.user = User.fromJsonObject(jsonObject.getJSONObject("user"));
+
+           if(jsonObject.has("extended_entities")){
+                tweet.mediaObjects = Media.fromJsonArray(jsonObject.getJSONObject("extended_entities"));
+            }
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -69,8 +118,7 @@ public class Tweet {
         return tweet;
     }
 
-    public static ArrayList<Tweet> fromJsonArray(JSONArray jsonArray)
-    {
+    public static ArrayList<Tweet> fromJsonArray(JSONArray jsonArray){
         ArrayList<Tweet> tweets = new ArrayList<>();
 
         for (int i=0;i<jsonArray.length();i++)
@@ -92,24 +140,5 @@ public class Tweet {
 
         return tweets;
     }
-
-    // getRelativeTimeAgo("Mon Apr 01 21:16:23 +0000 2014");
-    public String getRelativeTimeAgo(String rawJsonDate) {
-        String twitterFormat = "EEE MMM dd HH:mm:ss ZZZZZ yyyy";
-        SimpleDateFormat sf = new SimpleDateFormat(twitterFormat, Locale.ENGLISH);
-        sf.setLenient(true);
-
-        String relativeDate = "";
-        try {
-            long dateMillis = sf.parse(rawJsonDate).getTime();
-            relativeDate = DateUtils.getRelativeTimeSpanString(dateMillis,
-                    System.currentTimeMillis(), DateUtils.SECOND_IN_MILLIS).toString();
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
-        return relativeDate;
-    }
-
 
 }

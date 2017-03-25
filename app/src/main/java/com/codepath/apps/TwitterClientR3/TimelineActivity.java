@@ -2,6 +2,9 @@ package com.codepath.apps.TwitterClientR3;
 
 
 import android.content.Intent;
+import android.os.Handler;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -46,7 +49,18 @@ public class TimelineActivity extends AppCompatActivity {
 
     private SwipeRefreshLayout swipeContainer;
     private RecyclerView lvTweets;
+    FloatingActionButton fabCreate;
 
+   /* static final int POLL_INTERVAL = 10000; // milliseconds
+    Handler myHandler = new Handler();  // android.os.Handler
+    Runnable mRefreshMessagesRunnable = new Runnable() {
+        @Override
+        public void run() {
+            refreshTweets();
+            myHandler.postDelayed(this, POLL_INTERVAL);
+        }
+    };
+*/
     EndlessRecyclerViewScrollListener scrollListener;
     LinearLayoutManager linearLayoutManager;
     @Override
@@ -62,7 +76,6 @@ public class TimelineActivity extends AppCompatActivity {
                 // Make sure you call swipeContainer.setRefreshing(false)
                 // once the network request has completed successfully.
                 refreshTweets();
-
             }
         });
 
@@ -92,21 +105,41 @@ public class TimelineActivity extends AppCompatActivity {
             public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
                 populateTimeLine();
             }
+
+            @Override
+            public void onScrolled(RecyclerView view, int dx, int dy) {
+                if (dy > 0)
+                    fabCreate.hide();
+                else if (dy < 0)
+                    fabCreate.show();
+            }
         };
         lvTweets.addOnScrollListener(scrollListener);
-
-        client = TwitterApp.getRestClient();
-        populateTimeLine();
 
         ItemClickSupport.addTo(lvTweets).setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
             @Override
             public void onItemClicked(RecyclerView recyclerView, int position, View v) {
-                Intent i = new Intent(getApplicationContext(), TweetActivity.class);
+                Intent i = new Intent(TimelineActivity.this, TweetActivity.class);
                 Tweet tweet = tweets.get(position);
                 i.putExtra("tweet", Parcels.wrap(tweet));
                 startActivity(i);
             }
         });
+
+
+        client = TwitterApp.getRestClient();
+        populateTimeLine();
+
+        fabCreate  = (FloatingActionButton) findViewById(R.id.fabCreate);
+        fabCreate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(TimelineActivity.this,NewTweetActivity.class);
+                startActivityForResult(i, REQUEST_CODE);
+            }
+        });
+
+        //myHandler.postDelayed(mRefreshMessagesRunnable, POLL_INTERVAL);
     }
 
     //Add tweets to main list and notify adapter
@@ -191,11 +224,11 @@ public class TimelineActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle presses on the action bar items
         switch (item.getItemId()) {
-            case R.id.compose:
+          /*  case R.id.compose:
                 Intent i = new Intent(TimelineActivity.this,NewTweetActivity.class);
                 startActivityForResult(i, REQUEST_CODE);
 
-                return true;
+                return true;*/
 
             default:
                 return super.onOptionsItemSelected(item);

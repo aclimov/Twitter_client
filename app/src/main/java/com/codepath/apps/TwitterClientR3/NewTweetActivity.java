@@ -36,6 +36,7 @@ public class NewTweetActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_tweet);
 
+
         button = (Button) findViewById(R.id.button);
         tvCharsLeft = (TextView)findViewById(R.id.textView);
         editText=(EditText) findViewById(R.id.editText);
@@ -92,4 +93,6 @@ public class NewTweetActivity extends AppCompatActivity {
             }
         });
     }
+
+
 }

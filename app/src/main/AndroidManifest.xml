@@ -40,8 +40,10 @@
             </intent-filter>
         </activity>
         <activity android:name=".TimelineActivity" />
-        <activity android:name=".NewTweetActivity" />
-        <activity android:name=".TweetActivity"></activity>
+        <activity android:name=".NewTweetActivity"
+            android:parentActivityName=".TimelineActivity"/>
+        <activity android:name=".TweetActivity"
+            android:parentActivityName=".TimelineActivity"></activity>
     </application>
 
 </manifest>
