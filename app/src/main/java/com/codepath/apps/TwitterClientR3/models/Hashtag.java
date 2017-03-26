@@ -3,6 +3,7 @@ package com.codepath.apps.TwitterClientR3.models;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.parceler.Parcel;
 
 import java.util.ArrayList;
 
@@ -10,6 +11,7 @@ import java.util.ArrayList;
  * Created by alex_ on 3/26/2017.
  */
 
+@Parcel(analyze = Hashtag.class)
 public class Hashtag {
     public int start;
     public int end;

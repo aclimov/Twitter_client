@@ -1,51 +1,96 @@
 package com.codepath.apps.TwitterClientR3.activities;
 
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Parcel;
+import android.preference.PreferenceManager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.codepath.apps.TwitterClientR3.R;
+import com.codepath.apps.TwitterClientR3.RoundedCornersTransformation;
 import com.codepath.apps.TwitterClientR3.TwitterApp;
 import com.codepath.apps.TwitterClientR3.TwitterClient;
 import com.codepath.apps.TwitterClientR3.models.Tweet;
+import com.codepath.apps.TwitterClientR3.models.User;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.parceler.Parcels;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 
 import cz.msebera.android.httpclient.Header;
 
+import static com.codepath.apps.TwitterClientR3.R.id.ivClose;
+
 public class NewTweetActivity extends AppCompatActivity {
 
+    private final String FILE_NAME = "draft.txt";
     private TwitterClient client;
 
     EditText editText;
     TextView tvCharsLeft;
     Button button;
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_new_tweet);
+    ImageView ivProfileImage;
+    ImageView ivClose;
 
+    DialogInterface.OnClickListener dialogClickListener;
 
+    private void findControls() {
         button = (Button) findViewById(R.id.button);
-        tvCharsLeft = (TextView)findViewById(R.id.textView);
-        editText=(EditText) findViewById(R.id.editText);
+        tvCharsLeft = (TextView) findViewById(R.id.textView);
+        editText = (EditText) findViewById(R.id.etBody);
+        ivProfileImage = (ImageView) findViewById(R.id.ivProfileImage);
+        ivClose = (ImageView) findViewById(R.id.ivClose);
+    }
+
+    private void attachListeners() {
+        //prepare dialog for exit
+        dialogClickListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which) {
+                    case DialogInterface.BUTTON_POSITIVE:
+                        String tweetBody = editText.getText().toString();
+                        writeDraftTweet(tweetBody);
+
+                        break;
+
+                    case DialogInterface.BUTTON_NEGATIVE:
+                        writeDraftTweet("");
+                        break;
+                }
+
+                finish();
+            }
+        };
+
         editText.addTextChangedListener(new TextWatcher() {
             @Override
             public void afterTextChanged(Editable s) {
-                int charLeft = 140-editText.length();
+                int charLeft = 140 - editText.length();
                 tvCharsLeft.setText(String.valueOf(charLeft));
             }
 
@@ -63,21 +108,64 @@ public class NewTweetActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 statusUpdate();
+                writeDraftTweet("");
+            }
+        });
+
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_new_tweet);
+        findControls();
+
+
+        String draftData = readDraftData();
+        if(!TextUtils.isEmpty(draftData))
+        {
+            editText.setText(draftData);
+            int charLeft = 140 - editText.length();
+            tvCharsLeft.setText(String.valueOf(charLeft));
+        }
+
+        client = TwitterApp.getRestClient();
+
+        //retrieve user image from shared settings
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
+        String usernameUrl = pref.getString("userUrl", "");
+
+        if (!TextUtils.isEmpty(usernameUrl)) {
+            Glide.with(NewTweetActivity.this).load(usernameUrl)
+                    .bitmapTransform(new RoundedCornersTransformation(NewTweetActivity.this, 15, 2))
+                    .into(ivProfileImage);
+        }
+
+
+        attachListeners();
+
+        ivClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                closeWindow();
             }
         });
     }
 
-    private void statusUpdate()
-    {
-        client = TwitterApp.getRestClient();
+    private void closeWindow() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(NewTweetActivity.this);
+        builder.setMessage("Do you want save text as draft").setPositiveButton("Yes", dialogClickListener)
+                .setNegativeButton("No", dialogClickListener).show();
+    }
+
+    private void statusUpdate() {
         Tweet tweet = new Tweet();
         tweet.setBody(editText.getText().toString());
-
-        client.createTweet(tweet,new JsonHttpResponseHandler() {
+        client.createTweet(tweet, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-               Tweet newTweet = Tweet.fromJson(response);
-               //return Tweet object back to timeline
+                Tweet newTweet = Tweet.fromJson(response);
+                //return Tweet object back to timeline
                 //it now has Ids and can be inserted into mTweets list
 
                 Intent data = new Intent();
@@ -94,6 +182,45 @@ public class NewTweetActivity extends AppCompatActivity {
                 Log.d("DEBUG", errorResponse.toString());
             }
         });
+
+    }
+
+
+    private String readDraftData() {
+        String line;
+        StringBuffer buffer = new StringBuffer();
+        BufferedReader input = null;
+        try {
+            input = new BufferedReader(
+                    new InputStreamReader(openFileInput(FILE_NAME)));
+
+            while ((line = input.readLine()) != null) {
+                buffer.append(line + "\n");
+            }
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return buffer.toString();
+
+    }
+
+    private void writeDraftTweet(String tweetBody) {
+
+        FileOutputStream fos = null;
+        try {
+            fos = openFileOutput(FILE_NAME, MODE_WORLD_WRITEABLE);
+            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(fos));
+            writer.write(tweetBody);
+            writer.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 

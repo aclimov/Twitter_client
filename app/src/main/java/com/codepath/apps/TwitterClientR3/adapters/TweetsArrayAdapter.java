@@ -27,6 +27,8 @@ import com.codepath.apps.TwitterClientR3.models.Tweet;
 
 import java.util.List;
 
+import static com.codepath.apps.TwitterClientR3.R.id.tvLike;
+
 /**
  * Created by alex_ on 3/21/2017.
  */
@@ -80,6 +82,7 @@ public class TweetsArrayAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     @Override
     public int getItemViewType(int position) {
         String type = mTweets.get(position).getType();
+
         switch (type) {
             case "photo":
                 return IMG;
@@ -157,6 +160,14 @@ public class TweetsArrayAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         viewHolder.tvUsername.setText("@" + tweet.getUser().getScreenName());
         viewHolder.tvDisplayName.setText(tweet.getUser().getName());
 
+        if(tweet.getFavoriteCount()>0){
+            viewHolder.tvLike.setText(String.valueOf(tweet.getFavoriteCount()));
+        }
+
+        if(tweet.getRetweetCount()>0){
+            viewHolder.tvRetweet.setText(String.valueOf(tweet.getRetweetCount()));
+        }
+
         if (!TextUtils.isEmpty(tweet.getRetweetedBy())) {
             viewHolder.tvRetweeted.setText(tweet.getRetweetedBy());
         } else {
@@ -183,6 +194,9 @@ public class TweetsArrayAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         public TextView tvRetweeted;
         public RelativeLayout llLeftColumn;
 
+        public TextView tvRetweet;
+        public TextView tvLike;
+
         //Define constructor wichi accept entire row and find sub views
         public ViewHolder_simple(View itemView) {
             // Stores the itemView in a public final member variable that can be used
@@ -197,6 +211,9 @@ public class TweetsArrayAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             tvRetweeted = (TextView) itemView.findViewById(R.id.tvRetweeted);
 
             llLeftColumn = (RelativeLayout) itemView.findViewById(R.id.llLeftColumn);
+
+            tvRetweet = (TextView) itemView.findViewById(R.id.tvRetweet);
+            tvLike = (TextView) itemView.findViewById(R.id.tvLike);
         }
     }
 

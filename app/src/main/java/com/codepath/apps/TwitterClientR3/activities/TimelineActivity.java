@@ -2,7 +2,9 @@ package com.codepath.apps.TwitterClientR3.activities;
 
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
+import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -14,6 +16,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AbsListView;
 
 import com.codepath.apps.TwitterClientR3.EndlessRecyclerViewScrollListener;
 import com.codepath.apps.TwitterClientR3.ItemClickSupport;
@@ -22,7 +25,16 @@ import com.codepath.apps.TwitterClientR3.adapters.TweetsArrayAdapter;
 import com.codepath.apps.TwitterClientR3.TwitterApp;
 import com.codepath.apps.TwitterClientR3.TwitterClient;
 import com.codepath.apps.TwitterClientR3.models.Tweet;
+import com.codepath.apps.TwitterClientR3.models.User;
 import com.loopj.android.http.JsonHttpResponseHandler;
+import com.volokh.danylo.video_player_manager.manager.PlayerItemChangeListener;
+import com.volokh.danylo.video_player_manager.manager.SingleVideoPlayerManager;
+import com.volokh.danylo.video_player_manager.manager.VideoPlayerManager;
+import com.volokh.danylo.video_player_manager.meta.MetaData;
+import com.volokh.danylo.visibility_utils.calculator.DefaultSingleItemCalculatorCallback;
+import com.volokh.danylo.visibility_utils.calculator.ListItemsVisibilityCalculator;
+import com.volokh.danylo.visibility_utils.calculator.SingleListViewItemActiveCalculator;
+import com.volokh.danylo.visibility_utils.scroll_utils.ItemsPositionGetter;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -55,6 +67,9 @@ public class TimelineActivity extends AppCompatActivity {
     LinearLayoutManager linearLayoutManager;
     Toolbar toolbar;
 
+
+
+
    /* static final int POLL_INTERVAL = 10000; // milliseconds
     Handler myHandler = new Handler();  // android.os.Handler
     Runnable mRefreshMessagesRunnable = new Runnable() {
@@ -66,96 +81,7 @@ public class TimelineActivity extends AppCompatActivity {
     };
 */
 
-   // find and bind controls
-    private void findControls(){
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        swipeContainer = (SwipeRefreshLayout)findViewById(R.id.swipeContainer);
-        lvTweets = (RecyclerView) findViewById(R.id.lvTweets);
-        linearLayoutManager = new LinearLayoutManager(this);
-        fabCreate  = (FloatingActionButton) findViewById(R.id.fabCreate);
-    }
 
-    private void initAdapter(){
-        tweetIds=new HashSet();
-        //init controls
-
-        //init arraylist
-        tweets = new ArrayList<Tweet>();
-        //construct adapter from datasource
-        aTweets = new TweetsArrayAdapter(this, tweets);
-    }
-
-    //set controls properties
-    private void initControls(){
-
-        if(toolbar!=null){
-            setSupportActionBar(toolbar);
-            getSupportActionBar().setDisplayShowTitleEnabled(false);
-        }
-
-        if(swipeContainer!=null) {
-            swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
-                    R.color.colorGrey,
-                    R.color.colorWhite
-            );
-        }
-
-        //connect adapter with recyclerView
-        lvTweets.setAdapter(aTweets);
-        lvTweets.setLayoutManager(linearLayoutManager);
-        fabCreate.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorPrimary)));
-
-
-    }
-
-    private void appendListeners(){
-        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                // Your code to refresh the list here.
-                // Make sure you call swipeContainer.setRefreshing(false)
-                // once the network request has completed successfully.
-                refreshTweets();
-            }
-        });
-
-        scrollListener = new EndlessRecyclerViewScrollListener(linearLayoutManager) {
-            @Override
-            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
-                populateTimeLine();
-            }
-
-           /* @Override
-            public void onScrolled(RecyclerView view, int dx, int dy) {
-                if (dy > 0)
-                    fabCreate.hide();
-                else if (dy < 0)
-                    fabCreate.show();
-            }*/
-        };
-        lvTweets.addOnScrollListener(scrollListener);
-
-
-        ItemClickSupport.addTo(lvTweets).setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
-            @Override
-            public void onItemClicked(RecyclerView recyclerView, int position, View v) {
-                Intent i = new Intent(TimelineActivity.this, TweetActivity.class);
-                Tweet tweet = tweets.get(position);
-                i.putExtra("tweet", Parcels.wrap(tweet));
-                startActivity(i);
-            }
-        });
-
-        fabCreate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent i = new Intent(TimelineActivity.this,NewTweetActivity.class);
-                startActivityForResult(i, REQUEST_CODE);
-            }
-        });
-
-
-    }
 
 
     @Override
@@ -172,10 +98,11 @@ public class TimelineActivity extends AppCompatActivity {
 
         appendListeners();
 
-
         client = TwitterApp.getRestClient();
         populateTimeLine();
+        //get Current user imagelink  and store in preferred settings
 
+        storeUserImage();
         //myHandler.postDelayed(mRefreshMessagesRunnable, POLL_INTERVAL);
     }
 
@@ -284,7 +211,120 @@ public class TimelineActivity extends AppCompatActivity {
                 tweetIds.add(tweet.getUid());
             }
             aTweets.notifyItemInserted(0);
+            lvTweets.scrollToPosition(0);
         }
     }
 
+    // find and bind controls
+    private void findControls(){
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        swipeContainer = (SwipeRefreshLayout)findViewById(R.id.swipeContainer);
+        lvTweets = (RecyclerView) findViewById(R.id.lvTweets);
+        linearLayoutManager = new LinearLayoutManager(this);
+        fabCreate  = (FloatingActionButton) findViewById(R.id.fabCreate);
+    }
+
+    private void initAdapter(){
+        tweetIds=new HashSet();
+        //init controls
+
+        //init arraylist
+        tweets = new ArrayList<Tweet>();
+        //construct adapter from datasource
+        aTweets = new TweetsArrayAdapter(this, tweets);
+    }
+
+    //set controls properties
+    private void initControls(){
+
+        if(toolbar!=null){
+            setSupportActionBar(toolbar);
+            getSupportActionBar().setDisplayShowTitleEnabled(false);
+        }
+
+        if(swipeContainer!=null) {
+            swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
+                    R.color.colorGrey,
+                    R.color.colorWhite
+            );
+        }
+
+        //connect adapter with recyclerView
+        lvTweets.setAdapter(aTweets);
+        lvTweets.setLayoutManager(linearLayoutManager);
+        fabCreate.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorPrimary)));
+
+
+    }
+
+    private void appendListeners(){
+        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                // Your code to refresh the list here.
+                // Make sure you call swipeContainer.setRefreshing(false)
+                // once the network request has completed successfully.
+                refreshTweets();
+            }
+        });
+
+        scrollListener = new EndlessRecyclerViewScrollListener(linearLayoutManager) {
+            @Override
+            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+                populateTimeLine();
+            }
+
+           /* @Override
+            public void onScrolled(RecyclerView view, int dx, int dy) {
+                if (dy > 0)
+                    fabCreate.hide();
+                else if (dy < 0)
+                    fabCreate.show();
+            }*/
+        };
+        lvTweets.addOnScrollListener(scrollListener);
+
+
+        ItemClickSupport.addTo(lvTweets).setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
+            @Override
+            public void onItemClicked(RecyclerView recyclerView, int position, View v) {
+                Intent i = new Intent(TimelineActivity.this, TweetActivity.class);
+                Tweet tweet = tweets.get(position);
+                i.putExtra("tweet", Parcels.wrap(tweet));
+                startActivity(i);
+            }
+        });
+
+        fabCreate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(TimelineActivity.this,NewTweetActivity.class);
+                startActivityForResult(i, REQUEST_CODE);
+            }
+        });
+
+
+    }
+
+    public void storeUserImage(){
+        client.getCurrentUser(new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                User currentUser = User.fromJsonObject(response);
+                //set curent user image
+
+                if(currentUser!=null){
+                    SharedPreferences pref =PreferenceManager.getDefaultSharedPreferences(TimelineActivity.this);
+                    SharedPreferences.Editor edit = pref.edit();
+                    edit.putString("userUrl", currentUser.getProfileImageUrl());
+                    edit.commit();
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                Log.d("DEBUG", errorResponse.toString());
+            }
+        });
+    }
 }

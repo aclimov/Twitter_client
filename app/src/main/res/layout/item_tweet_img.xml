@@ -48,59 +48,94 @@
     </RelativeLayout>
 
     <RelativeLayout
+        android:id="@+id/llRightColumn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/llRightColumn"
         android:layout_alignTop="@+id/llLeftColumn"
         android:layout_toEndOf="@+id/llLeftColumn"
         android:layout_toRightOf="@+id/llLeftColumn"
         android:paddingLeft="10dp"
         android:paddingRight="10dp">
 
-    <TextView
-        android:id="@+id/tvDisplayName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="sans-serif"
-        android:text="Ryan Hoover"
-        android:textColor="@android:color/black"
-        android:textSize="18sp"
-        android:textStyle="bold" />
+        <TextView
+            android:id="@+id/tvDisplayName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif"
+            android:text="Ryan Hoover"
+            android:textColor="@android:color/black"
+            android:textSize="18sp"
+            android:textStyle="bold" />
 
-    <TextView
-        android:id="@+id/tvName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/tvDisplayName"
-        android:layout_toEndOf="@+id/tvDisplayName"
-        android:layout_toRightOf="@+id/tvDisplayName"
-        android:paddingLeft="5dp"
-        android:text="ClimovAlex"
-        android:textSize="14sp" />
+        <TextView
+            android:id="@+id/tvName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/tvDisplayName"
+            android:layout_toEndOf="@+id/tvDisplayName"
+            android:layout_toRightOf="@+id/tvDisplayName"
+            android:paddingLeft="5dp"
+            android:text="ClimovAlex"
+            android:textSize="14sp" />
 
-    <com.codepath.apps.TwitterClientR3.LinkifiedTextView
-        android:id="@+id/tvBody"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/tvDisplayName"
-        android:paddingTop="7dp"
-        android:text="Test tweet this is for sure"
-        android:textColor="@color/colorPrimaryDark"
-        android:textSize="16sp"
-        android:autoLink="all"
-        android:linksClickable="true"/>
+        <com.codepath.apps.TwitterClientR3.LinkifiedTextView
+            android:id="@+id/tvBody"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tvDisplayName"
+            android:autoLink="all"
+            android:linksClickable="true"
+            android:paddingTop="7dp"
+            android:text="Test tweet this is for sure"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="16sp" />
 
-    <ImageView
-        android:id="@+id/ivTweetMedia"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/tvBody"
-        android:paddingTop="7dp"
-        android:adjustViewBounds="true"
-        android:scaleType="fitCenter"
-        />
+        <ImageView
+            android:id="@+id/ivTweetMedia"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/tvBody"
+            android:adjustViewBounds="true"
+            android:paddingTop="7dp"
+            android:scaleType="fitCenter" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/ivTweetMedia"
+            android:orientation="horizontal"
+            android:paddingTop="7dp"
+            android:weightSum="3">
+
+            <TextView
+                android:id="@+id/tvReply"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:drawableLeft="@drawable/ic_reply"
+                android:drawablePadding="10dp"
+                android:paddingLeft="34dp" />
+
+            <TextView
+                android:id="@+id/tvRetweet"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:drawableLeft="@drawable/retweet_btn"
+                android:drawablePadding="10dp"
+                android:paddingLeft="34dp" />
+
+            <TextView
+                android:id="@+id/tvLike"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:drawableLeft="@drawable/ic_heart_shape_silhouette"
+                android:drawablePadding="10dp"
+                android:paddingLeft="34dp" />
+        </LinearLayout>
     </RelativeLayout>
 
 </RelativeLayout>

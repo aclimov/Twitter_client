@@ -24,6 +24,18 @@ import java.util.Locale;
 @Parcel(analyze = Tweet.class)
 public class Tweet extends BaseModel    {
 
+    public int getRetweetCount() {
+        return retweetCount;
+    }
+
+    public int getFavoriteCount() {
+        return favoriteCount;
+    }
+
+    private int retweetCount;
+    private int favoriteCount;
+
+
     public void setBody(String body) {
         this.body = body;
     }
@@ -51,6 +63,9 @@ public class Tweet extends BaseModel    {
     private String body;
 
     public String getType() {
+        if(type==null) {
+            return "";
+        }
         return type;
     }
 
@@ -88,12 +103,15 @@ public class Tweet extends BaseModel    {
     ArrayList<Hashtag> hashtags;
 
     public ArrayList<Hashtag> getHashtags()
-    {return hashtags;}
+    {
+        if(hashtags==null) {return new ArrayList<Hashtag>();}
+        return hashtags;}
 
     ArrayList<Mention> mentions;
 
     public ArrayList<Mention> getMentions()
-    {return mentions;}
+    { if(mentions==null){ return new ArrayList<Mention>();}
+        return mentions;}
 
     public String getBody() {
         return body;
@@ -162,6 +180,8 @@ public class Tweet extends BaseModel    {
             tweet.uid = jsonObject.getLong("id");
             tweet.createdAt = jsonObject.getString("created_at");
             tweet.user = User.fromJsonObject(jsonObject.getJSONObject("user"));
+            tweet.retweetCount=jsonObject.getInt("retweet_count");
+            tweet.favoriteCount=jsonObject.getInt("favorite_count");
             tweet.type="simple";
            if(jsonObject.has("extended_entities")){
                 tweet.mediaObjects = Media.fromJsonArray(jsonObject.getJSONObject("extended_entities"));

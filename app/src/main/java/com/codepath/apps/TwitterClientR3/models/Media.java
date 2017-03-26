@@ -3,13 +3,14 @@ package com.codepath.apps.TwitterClientR3.models;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.parceler.Parcel;
 
 import java.util.ArrayList;
 
 /**
  * Created by alex_ on 3/24/2017.
  */
-
+@Parcel(analyze = Media.class)
 public class Media {
 
     long id;

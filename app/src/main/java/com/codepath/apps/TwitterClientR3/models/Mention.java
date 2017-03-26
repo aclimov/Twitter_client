@@ -3,11 +3,12 @@ package com.codepath.apps.TwitterClientR3.models;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.parceler.Parcel;
 
 import java.util.ArrayList;
 
 
-
+@Parcel(analyze = Mention.class)
 public class Mention {
     public int start;
     public int end;
