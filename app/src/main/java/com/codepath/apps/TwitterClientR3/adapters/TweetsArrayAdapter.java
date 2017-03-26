@@ -157,7 +157,7 @@ public class TweetsArrayAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
 
         viewHolder.tvTimestamp.setText(tweet.getTimestamp());
-        viewHolder.tvUsername.setText("@" + tweet.getUser().getScreenName());
+        viewHolder.tvUsername.setText( tweet.getUser().getScreenName());
         viewHolder.tvDisplayName.setText(tweet.getUser().getName());
 
         if(tweet.getFavoriteCount()>0){

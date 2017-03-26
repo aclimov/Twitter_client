@@ -57,7 +57,7 @@ public class User extends BaseModel{
     }
 
     public String getScreenName() {
-        return screenName;
+        return "@"+screenName;
     }
 
     public String getProfileImageUrl() {

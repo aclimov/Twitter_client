@@ -15,9 +15,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.parceler.Parcel;
 
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Locale;
 
 @Table(database = MyDatabase.class)
@@ -126,7 +128,21 @@ public class Tweet extends BaseModel    {
     }
 
     public String getCreatedAt() {
-        return createdAt;
+
+        String returnDate="";
+        String twitterFormat = "EEE MMM dd HH:mm:ss ZZZZZ yyyy";
+        SimpleDateFormat sf = new SimpleDateFormat(twitterFormat, Locale.ENGLISH);
+        try {
+            Date date = sf.parse(createdAt);
+            DateFormat df = new SimpleDateFormat("MMM-dd HH:mm");
+
+
+            returnDate = df.format(date);
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return returnDate;
     }
 
     public String getTimestamp() {
