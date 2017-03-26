@@ -61,7 +61,7 @@ public class User extends BaseModel{
     }
 
     public String getProfileImageUrl() {
-        return profileImageUrl;
+        return profileImageUrl.replace("_normal","");
     }
 
     //deserialize the user json=> User

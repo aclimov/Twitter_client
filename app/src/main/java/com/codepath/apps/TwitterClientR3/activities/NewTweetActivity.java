@@ -1,4 +1,4 @@
-package com.codepath.apps.TwitterClientR3;
+package com.codepath.apps.TwitterClientR3.activities;
 
 import android.content.Intent;
 import android.os.Parcel;
@@ -13,6 +13,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.codepath.apps.TwitterClientR3.R;
+import com.codepath.apps.TwitterClientR3.TwitterApp;
+import com.codepath.apps.TwitterClientR3.TwitterClient;
 import com.codepath.apps.TwitterClientR3.models.Tweet;
 import com.loopj.android.http.JsonHttpResponseHandler;
 

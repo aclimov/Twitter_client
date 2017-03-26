@@ -1,5 +1,6 @@
 package com.codepath.apps.TwitterClientR3.models;
 
+import android.text.TextUtils;
 import android.text.format.DateUtils;
 
 import com.codepath.apps.TwitterClientR3.MyDatabase;
@@ -27,8 +28,37 @@ public class Tweet extends BaseModel    {
         this.body = body;
     }
 
+    public String getRetweetedBy() {
+        if(TextUtils.isEmpty(retweetedBy)) return "";
+        return String.format("%s Retweeted",  retweetedBy);
+    }
+
+    public void setRetweetedBy(String retweetedBy) {
+        this.retweetedBy = retweetedBy;
+    }
+
+    public ArrayList<Media> getMediaObjects() {
+        return mediaObjects;
+    }
+
+    public void setMediaObjects(ArrayList<Media> mediaObjects) {
+        this.mediaObjects = mediaObjects;
+    }
+
+    @Column
+    private String retweetedBy;
     @Column
     private String body;
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    private String type;
 
     public void setUid(long uid) {
         this.uid = uid;
@@ -54,6 +84,16 @@ public class Tweet extends BaseModel    {
     String createdAt;
 
     ArrayList<Media> mediaObjects;
+
+    ArrayList<Hashtag> hashtags;
+
+    public ArrayList<Hashtag> getHashtags()
+    {return hashtags;}
+
+    ArrayList<Mention> mentions;
+
+    public ArrayList<Mention> getMentions()
+    {return mentions;}
 
     public String getBody() {
         return body;
@@ -87,7 +127,14 @@ public class Tweet extends BaseModel    {
         try {
             long dateMillis = sf.parse(rawJsonDate).getTime();
             relativeDate = DateUtils.getRelativeTimeSpanString(dateMillis,
-                    System.currentTimeMillis(), DateUtils.SECOND_IN_MILLIS).toString();
+                    System.currentTimeMillis(), DateUtils.MINUTE_IN_MILLIS).toString();
+            relativeDate = relativeDate.replace(" minutes ago","m")
+                                        .replace(" minute ago","m")
+                                        .replace(" hours ago","h")
+                                        .replace(" hour ago","h")
+                                        .replace(" days ago","d")
+                                        .replace(" day ago","d");
+
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -95,19 +142,42 @@ public class Tweet extends BaseModel    {
         return relativeDate;
     }
 
-    public static Tweet fromJson(JSONObject jsonObject){
+    public static Tweet fromJson(JSONObject jsonObj){
         Tweet tweet = new Tweet();
+        JSONObject jsonObject;
+
         try {
+
+            if(jsonObj.has("retweeted_status")){
+                User user=User.fromJsonObject(jsonObj.getJSONObject("user"));
+                tweet.retweetedBy=user.getName();
+                jsonObject=jsonObj.getJSONObject("retweeted_status");
+            }else{
+                jsonObject=jsonObj;
+            }
+
             String fullText =jsonObject.getString("full_text");
             JSONArray range = jsonObject.getJSONArray("display_text_range");
             tweet.body =fullText.substring((Integer)range.get(0),(Integer)range.get(1));
             tweet.uid = jsonObject.getLong("id");
             tweet.createdAt = jsonObject.getString("created_at");
             tweet.user = User.fromJsonObject(jsonObject.getJSONObject("user"));
-
+            tweet.type="simple";
            if(jsonObject.has("extended_entities")){
                 tweet.mediaObjects = Media.fromJsonArray(jsonObject.getJSONObject("extended_entities"));
+               tweet.type=tweet.mediaObjects.get(0).getType();
             }
+            if(jsonObject.has("entities")){
+               JSONObject entityObject = jsonObject.getJSONObject("entities");
+                if(entityObject.has("hashtags")){
+                    tweet.hashtags =Hashtag.fromJsonArray(entityObject.getJSONArray("hashtags"));
+                }
+                if(entityObject.has("user_mentions")){
+                    tweet.mentions =Mention.fromJsonArray(entityObject.getJSONArray("user_mentions"));
+                }
+
+            }
+
 
         } catch (JSONException e) {
             e.printStackTrace();

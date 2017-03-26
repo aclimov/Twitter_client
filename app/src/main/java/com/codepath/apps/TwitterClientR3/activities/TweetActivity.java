@@ -1,4 +1,4 @@
-package com.codepath.apps.TwitterClientR3;
+package com.codepath.apps.TwitterClientR3.activities;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -11,8 +11,6 @@ import com.codepath.apps.TwitterClientR3.models.Tweet;
 import com.squareup.picasso.Picasso;
 
 import org.parceler.Parcels;
-
-import static java.lang.System.load;
 
 public class TweetActivity extends AppCompatActivity {
 

@@ -39,11 +39,11 @@
                     android:scheme="oauth" />
             </intent-filter>
         </activity>
-        <activity android:name=".TimelineActivity" />
-        <activity android:name=".NewTweetActivity"
-            android:parentActivityName=".TimelineActivity"/>
-        <activity android:name=".TweetActivity"
-            android:parentActivityName=".TimelineActivity"></activity>
+        <activity android:name=".activities.TimelineActivity" />
+        <activity android:name=".activities.NewTweetActivity"
+            android:parentActivityName=".activities.TimelineActivity"/>
+        <activity android:name=".activities.TweetActivity"
+            android:parentActivityName=".activities.TimelineActivity"></activity>
     </application>
 
 </manifest>

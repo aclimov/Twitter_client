@@ -1,10 +1,9 @@
-package com.codepath.apps.TwitterClientR3;
+package com.codepath.apps.TwitterClientR3.activities;
 
 
 import android.content.Intent;
-import android.os.Handler;
+import android.content.res.ColorStateList;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -15,13 +14,14 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
-import android.widget.Toast;
 
+import com.codepath.apps.TwitterClientR3.EndlessRecyclerViewScrollListener;
+import com.codepath.apps.TwitterClientR3.ItemClickSupport;
 import com.codepath.apps.TwitterClientR3.R;
+import com.codepath.apps.TwitterClientR3.adapters.TweetsArrayAdapter;
+import com.codepath.apps.TwitterClientR3.TwitterApp;
+import com.codepath.apps.TwitterClientR3.TwitterClient;
 import com.codepath.apps.TwitterClientR3.models.Tweet;
-import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.json.JSONArray;
@@ -36,11 +36,12 @@ import java.util.Set;
 
 import cz.msebera.android.httpclient.Header;
 
+import static com.codepath.apps.TwitterClientR3.R.id.toolbar;
+
 public class TimelineActivity extends AppCompatActivity {
 
     // REQUEST_CODE can be any value we like, used to determine the result type later
     private final int REQUEST_CODE = 20;
-
 
     private TwitterClient client;
     private ArrayList<Tweet> tweets;
@@ -50,6 +51,9 @@ public class TimelineActivity extends AppCompatActivity {
     private SwipeRefreshLayout swipeContainer;
     private RecyclerView lvTweets;
     FloatingActionButton fabCreate;
+    EndlessRecyclerViewScrollListener scrollListener;
+    LinearLayoutManager linearLayoutManager;
+    Toolbar toolbar;
 
    /* static final int POLL_INTERVAL = 10000; // milliseconds
     Handler myHandler = new Handler();  // android.os.Handler
@@ -61,14 +65,50 @@ public class TimelineActivity extends AppCompatActivity {
         }
     };
 */
-    EndlessRecyclerViewScrollListener scrollListener;
-    LinearLayoutManager linearLayoutManager;
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_timeline);
 
+   // find and bind controls
+    private void findControls(){
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
         swipeContainer = (SwipeRefreshLayout)findViewById(R.id.swipeContainer);
+        lvTweets = (RecyclerView) findViewById(R.id.lvTweets);
+        linearLayoutManager = new LinearLayoutManager(this);
+        fabCreate  = (FloatingActionButton) findViewById(R.id.fabCreate);
+    }
+
+    private void initAdapter(){
+        tweetIds=new HashSet();
+        //init controls
+
+        //init arraylist
+        tweets = new ArrayList<Tweet>();
+        //construct adapter from datasource
+        aTweets = new TweetsArrayAdapter(this, tweets);
+    }
+
+    //set controls properties
+    private void initControls(){
+
+        if(toolbar!=null){
+            setSupportActionBar(toolbar);
+            getSupportActionBar().setDisplayShowTitleEnabled(false);
+        }
+
+        if(swipeContainer!=null) {
+            swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
+                    R.color.colorGrey,
+                    R.color.colorWhite
+            );
+        }
+
+        //connect adapter with recyclerView
+        lvTweets.setAdapter(aTweets);
+        lvTweets.setLayoutManager(linearLayoutManager);
+        fabCreate.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorPrimary)));
+
+
+    }
+
+    private void appendListeners(){
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -79,42 +119,22 @@ public class TimelineActivity extends AppCompatActivity {
             }
         });
 
-        // Configure the refreshing colors
-        swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
-                android.R.color.holo_green_light,
-                android.R.color.holo_orange_light,
-                android.R.color.holo_red_light);
-
-
-        tweetIds=new HashSet();
-        //init controls
-        lvTweets = (RecyclerView) findViewById(R.id.lvTweets);
-        //init arraylist
-        tweets = new ArrayList<Tweet>();
-        //construct adapter from datasource
-        aTweets = new TweetsArrayAdapter(this, tweets);
-        //connect adapter with recyclerView
-        lvTweets.setAdapter(aTweets);
-
-        // Set layout manager to position the items
-        linearLayoutManager = new LinearLayoutManager(this);
-        lvTweets.setLayoutManager(linearLayoutManager);
-
         scrollListener = new EndlessRecyclerViewScrollListener(linearLayoutManager) {
             @Override
             public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
                 populateTimeLine();
             }
 
-            @Override
+           /* @Override
             public void onScrolled(RecyclerView view, int dx, int dy) {
                 if (dy > 0)
                     fabCreate.hide();
                 else if (dy < 0)
                     fabCreate.show();
-            }
+            }*/
         };
         lvTweets.addOnScrollListener(scrollListener);
+
 
         ItemClickSupport.addTo(lvTweets).setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
             @Override
@@ -126,11 +146,6 @@ public class TimelineActivity extends AppCompatActivity {
             }
         });
 
-
-        client = TwitterApp.getRestClient();
-        populateTimeLine();
-
-        fabCreate  = (FloatingActionButton) findViewById(R.id.fabCreate);
         fabCreate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -138,6 +153,28 @@ public class TimelineActivity extends AppCompatActivity {
                 startActivityForResult(i, REQUEST_CODE);
             }
         });
+
+
+    }
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_timeline);
+
+        //find controls
+        findControls();
+        //init adapter and lists
+        initAdapter();
+
+        initControls();
+
+        appendListeners();
+
+
+        client = TwitterApp.getRestClient();
+        populateTimeLine();
 
         //myHandler.postDelayed(mRefreshMessagesRunnable, POLL_INTERVAL);
     }
@@ -188,6 +225,7 @@ public class TimelineActivity extends AppCompatActivity {
                 @Override
                 public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
                     Log.d("DEBUG", errorResponse.toString());
+                    swipeContainer.setRefreshing(false);
                 }
             });
         }

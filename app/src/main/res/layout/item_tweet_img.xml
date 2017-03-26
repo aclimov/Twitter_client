@@ -57,40 +57,50 @@
         android:paddingLeft="10dp"
         android:paddingRight="10dp">
 
-        <TextView
-            android:id="@+id/tvDisplayName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="sans-serif"
-            android:text="Ryan Hoover"
-            android:textColor="@android:color/black"
-            android:textSize="18sp"
-            android:textStyle="bold" />
+    <TextView
+        android:id="@+id/tvDisplayName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="sans-serif"
+        android:text="Ryan Hoover"
+        android:textColor="@android:color/black"
+        android:textSize="18sp"
+        android:textStyle="bold" />
 
-        <TextView
-            android:id="@+id/tvName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignBaseline="@+id/tvDisplayName"
-            android:layout_toEndOf="@+id/tvDisplayName"
-            android:layout_toRightOf="@+id/tvDisplayName"
-            android:paddingLeft="5dp"
-            android:text="ClimovAlex"
-            android:textSize="14sp" />
+    <TextView
+        android:id="@+id/tvName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/tvDisplayName"
+        android:layout_toEndOf="@+id/tvDisplayName"
+        android:layout_toRightOf="@+id/tvDisplayName"
+        android:paddingLeft="5dp"
+        android:text="ClimovAlex"
+        android:textSize="14sp" />
 
-        <com.codepath.apps.TwitterClientR3.LinkifiedTextView
-            android:id="@+id/tvBody"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/tvDisplayName"
-            android:paddingTop="7dp"
-            android:text="Test tweet this is for sure"
-            android:textColor="@color/colorPrimaryDark"
-            android:textSize="16sp"
-            android:autoLink="all"
-            android:linksClickable="true"/>
+    <com.codepath.apps.TwitterClientR3.LinkifiedTextView
+        android:id="@+id/tvBody"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvDisplayName"
+        android:paddingTop="7dp"
+        android:text="Test tweet this is for sure"
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="16sp"
+        android:autoLink="all"
+        android:linksClickable="true"/>
 
-
+    <ImageView
+        android:id="@+id/ivTweetMedia"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/tvBody"
+        android:paddingTop="7dp"
+        android:adjustViewBounds="true"
+        android:scaleType="fitCenter"
+        />
     </RelativeLayout>
 
 </RelativeLayout>
