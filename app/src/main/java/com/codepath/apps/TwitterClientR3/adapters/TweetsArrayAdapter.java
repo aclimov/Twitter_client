@@ -148,7 +148,9 @@ public class TweetsArrayAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             ss.setSpan(clickableSpan, ht.start, ht.end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         }
         for(Mention mt:tweet.getMentions()){
-            ss.setSpan(clickableSpan, mt.start, mt.end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            if(mt.start>=0&&mt.end<ss.length()) {
+                ss.setSpan(clickableSpan, mt.start, mt.end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            }
         }
 
         viewHolder.tvBody.setText(ss);

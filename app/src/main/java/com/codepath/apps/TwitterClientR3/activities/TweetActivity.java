@@ -1,29 +1,42 @@
 package com.codepath.apps.TwitterClientR3.activities;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextPaint;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
+import android.util.Log;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.codepath.apps.TwitterClientR3.LinkifiedTextView;
 import com.codepath.apps.TwitterClientR3.R;
 import com.codepath.apps.TwitterClientR3.RoundedCornersTransformation;
+import com.codepath.apps.TwitterClientR3.TwitterApp;
+import com.codepath.apps.TwitterClientR3.TwitterClient;
 import com.codepath.apps.TwitterClientR3.models.Hashtag;
 import com.codepath.apps.TwitterClientR3.models.Mention;
 import com.codepath.apps.TwitterClientR3.models.Tweet;
+import com.loopj.android.http.JsonHttpResponseHandler;
 import com.squareup.picasso.Picasso;
 
+import org.json.JSONObject;
 import org.parceler.Parcels;
+
+import cz.msebera.android.httpclient.Header;
 
 public class TweetActivity extends AppCompatActivity {
 
@@ -32,29 +45,23 @@ public class TweetActivity extends AppCompatActivity {
     TextView tvTweetDate;
     LinkifiedTextView tvBody;
 
+    TextView tvCharsLeft;
     TextView tvReply;
     TextView tvRetweet;
     TextView tvLike;
 
     ImageView ivProfileImage;
     ImageView ivTweetMedia;
+    Button btnSend;
+    EditText etReply;
     private Tweet tweet;
 
+    private TwitterClient client;
     Toolbar toolbar;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_tweet);
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-
-        if(toolbar!=null){
-            setSupportActionBar(toolbar);
-            getSupportActionBar().setDisplayShowTitleEnabled(false);
-        }
-
-
+    private void findControls(){
+        btnSend = (Button) findViewById(R.id.btnSend);
 
         tvUserName=(TextView)findViewById(R.id.tvDisplayName);
         tvFullName=(TextView )findViewById(R.id.tvName);
@@ -65,10 +72,11 @@ public class TweetActivity extends AppCompatActivity {
         tvBody=(LinkifiedTextView)findViewById(R.id.tvBody);
         ivProfileImage=(ImageView)findViewById(R.id.ivProfileImage);
         ivTweetMedia=(ImageView)findViewById(R.id.ivTweetMedia);
+        etReply = (EditText) findViewById(R.id.etReply);
+        tvCharsLeft=(TextView) findViewById(R.id.tvCharsLeft);
+    }
 
-        tweet = Parcels.unwrap(getIntent().getParcelableExtra("tweet"));
-
-        fillTweetBody(tweet.getBody());
+    private void initControls(){
         tvUserName.setText(tweet.getUser().getName());
         tvFullName.setText(tweet.getUser().getScreenName());
         tvTweetDate.setText(tweet.getCreatedAt());
@@ -94,6 +102,77 @@ public class TweetActivity extends AppCompatActivity {
         if(tweet.getRetweetCount()>0){
             tvRetweet.setText(String.valueOf(tweet.getRetweetCount()));
         }
+
+
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_tweet);
+
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+
+        if(toolbar!=null){
+            setSupportActionBar(toolbar);
+            //getSupportActionBar().setDisplayShowTitleEnabled(false);
+        }
+
+        findControls();
+        tweet = Parcels.unwrap(getIntent().getParcelableExtra("tweet"));
+        fillTweetBody(tweet.getBody());
+        initControls();
+
+
+        btnSend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String tweetBody = etReply.getText().toString();
+                if(TextUtils.isEmpty(tweetBody))
+                {                    Toast.makeText(TweetActivity.this ,"Empty reply? Really?", Toast.LENGTH_SHORT).show();
+                }else{
+                    replyToTweet(tweetBody);
+                    etReply.setText("");
+                }
+            }
+        });
+
+        etReply.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void afterTextChanged(Editable s) {
+                int charLeft = 140 - etReply.length();
+                tvCharsLeft.setText(String.valueOf(charLeft));
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                // TODO Auto-generated method stub
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+        });
+
+         client = TwitterApp.getRestClient();
+    }
+
+    private void replyToTweet(String text) {
+        Tweet newTweet = new Tweet();
+        newTweet.setBody(text);
+        client.replyToTweet(tweet,newTweet , new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                tvReply.setText("1");
+                Toast.makeText(TweetActivity.this, "Reply was sent", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                Log.d("DEBUG", errorResponse.toString());
+            }
+        });
     }
 
     private void fillTweetBody(String body)

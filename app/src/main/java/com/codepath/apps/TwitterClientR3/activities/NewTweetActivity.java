@@ -185,7 +185,6 @@ public class NewTweetActivity extends AppCompatActivity {
 
     }
 
-
     private String readDraftData() {
         String line;
         StringBuffer buffer = new StringBuffer();
