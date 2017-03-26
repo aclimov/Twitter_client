@@ -115,7 +115,9 @@ public class TweetActivity extends AppCompatActivity {
 
         if(toolbar!=null){
             setSupportActionBar(toolbar);
-            //getSupportActionBar().setDisplayShowTitleEnabled(false);
+            getSupportActionBar().setDisplayShowTitleEnabled(false);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
 
         findControls();

@@ -17,6 +17,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AbsListView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.codepath.apps.TwitterClientR3.EndlessRecyclerViewScrollListener;
 import com.codepath.apps.TwitterClientR3.ItemClickSupport;
@@ -48,6 +50,7 @@ import java.util.Set;
 
 import cz.msebera.android.httpclient.Header;
 
+import static android.widget.Toast.makeText;
 import static com.codepath.apps.TwitterClientR3.R.id.toolbar;
 
 public class TimelineActivity extends AppCompatActivity {
@@ -298,6 +301,8 @@ public class TimelineActivity extends AppCompatActivity {
         fabCreate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+
                 Intent i = new Intent(TimelineActivity.this,NewTweetActivity.class);
                 startActivityForResult(i, REQUEST_CODE);
             }

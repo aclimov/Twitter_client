@@ -148,15 +148,14 @@ public class TweetsArrayAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             ss.setSpan(clickableSpan, ht.start, ht.end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         }
         for(Mention mt:tweet.getMentions()){
-            if(mt.start>=0&&mt.end<ss.length()) {
+           // if(mt.start>=0&&mt.end<ss.length()) {
                 ss.setSpan(clickableSpan, mt.start, mt.end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-            }
+           // }
         }
 
         viewHolder.tvBody.setText(ss);
         viewHolder.tvBody.setMovementMethod(LinkMovementMethod.getInstance());
         viewHolder.tvBody.setHighlightColor(Color.CYAN);
-
 
         viewHolder.tvTimestamp.setText(tweet.getTimestamp());
         viewHolder.tvUsername.setText( tweet.getUser().getScreenName());
@@ -175,7 +174,7 @@ public class TweetsArrayAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         } else {
             RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) viewHolder.llLeftColumn.getLayoutParams();
             params.addRule(RelativeLayout.ALIGN_PARENT_TOP);
-
+            viewHolder.tvRetweeted.setVisibility(View.INVISIBLE);
             viewHolder.llLeftColumn.setLayoutParams(params); //causes layout update*/
         }
 

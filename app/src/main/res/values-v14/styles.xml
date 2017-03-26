@@ -7,7 +7,7 @@
             backward-compatibility can go here.
         -->
         <item name="android:actionBarStyle">@style/MyActionBarTheme</item>
-        <item name="android:background">@color/colorWhite</item>
+
     </style>
 
     <!-- Application theme. -->
