@@ -20,7 +20,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".LoginActivity"
+            android:name=".activities.LoginActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme">
             <intent-filter>
@@ -40,10 +40,16 @@
             </intent-filter>
         </activity>
         <activity android:name=".activities.TimelineActivity" />
-        <activity android:name=".activities.NewTweetActivity"
-            android:parentActivityName=".activities.TimelineActivity"/>
-        <activity android:name=".activities.TweetActivity"
-            android:parentActivityName=".activities.TimelineActivity"></activity>
+        <activity
+            android:name=".activities.NewTweetActivity"
+            android:parentActivityName=".activities.TimelineActivity" />
+        <activity
+            android:name=".activities.TweetActivity"
+            android:parentActivityName=".activities.TimelineActivity" />
+        <activity android:name=".activities.ProfileActivity"
+            android:parentActivityName=".activities.TimelineActivity" ></activity>
+        <activity android:name=".activities.FollowActivity"
+            android:parentActivityName=".activities.ProfileActivity"></activity>
     </application>
 
 </manifest>

@@ -1,7 +1,9 @@
-package com.codepath.apps.TwitterClientR3;
+package com.codepath.apps.TwitterClientR3.helpers;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+
+import com.codepath.apps.TwitterClientR3.R;
 
 /*
   Source: http://www.littlerobots.nl/blog/Handle-Android-RecyclerView-Clicks/

@@ -3,7 +3,6 @@ package com.codepath.apps.TwitterClientR3.activities;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Parcel;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -20,30 +19,24 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.codepath.apps.TwitterClientR3.R;
-import com.codepath.apps.TwitterClientR3.RoundedCornersTransformation;
+import com.codepath.apps.TwitterClientR3.helpers.RoundedCornersTransformation;
 import com.codepath.apps.TwitterClientR3.TwitterApp;
-import com.codepath.apps.TwitterClientR3.TwitterClient;
+import com.codepath.apps.TwitterClientR3.net.TwitterClient;
 import com.codepath.apps.TwitterClientR3.models.Tweet;
-import com.codepath.apps.TwitterClientR3.models.User;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.parceler.Parcels;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.util.ArrayList;
 
 import cz.msebera.android.httpclient.Header;
-
-import static com.codepath.apps.TwitterClientR3.R.id.ivClose;
 
 public class NewTweetActivity extends AppCompatActivity {
 
@@ -141,7 +134,6 @@ public class NewTweetActivity extends AppCompatActivity {
                     .into(ivProfileImage);
         }
 
-
         attachListeners();
 
         ivClose.setOnClickListener(new View.OnClickListener() {
@@ -153,9 +145,14 @@ public class NewTweetActivity extends AppCompatActivity {
     }
 
     private void closeWindow() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(NewTweetActivity.this);
-        builder.setMessage("Do you want save text as draft").setPositiveButton("Yes", dialogClickListener)
-                .setNegativeButton("No", dialogClickListener).show();
+        if(editText!=null&&!TextUtils.isEmpty(editText.getText().toString())) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(NewTweetActivity.this);
+            builder.setMessage("Do you want save text as draft").setPositiveButton("Yes", dialogClickListener)
+                    .setNegativeButton("No", dialogClickListener).show();
+        }else
+        {
+            finish();
+        }
     }
 
     private void statusUpdate() {

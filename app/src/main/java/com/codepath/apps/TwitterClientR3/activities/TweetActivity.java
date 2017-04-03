@@ -1,6 +1,5 @@
 package com.codepath.apps.TwitterClientR3.activities;
 
-import android.content.Intent;
 import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -22,16 +21,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.codepath.apps.TwitterClientR3.LinkifiedTextView;
+import com.codepath.apps.TwitterClientR3.helpers.LinkifiedTextView;
 import com.codepath.apps.TwitterClientR3.R;
-import com.codepath.apps.TwitterClientR3.RoundedCornersTransformation;
+import com.codepath.apps.TwitterClientR3.helpers.RoundedCornersTransformation;
 import com.codepath.apps.TwitterClientR3.TwitterApp;
-import com.codepath.apps.TwitterClientR3.TwitterClient;
+import com.codepath.apps.TwitterClientR3.net.TwitterClient;
 import com.codepath.apps.TwitterClientR3.models.Hashtag;
 import com.codepath.apps.TwitterClientR3.models.Mention;
 import com.codepath.apps.TwitterClientR3.models.Tweet;
 import com.loopj.android.http.JsonHttpResponseHandler;
-import com.squareup.picasso.Picasso;
 
 import org.json.JSONObject;
 import org.parceler.Parcels;

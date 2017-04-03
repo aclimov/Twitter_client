@@ -3,7 +3,7 @@ package com.codepath.apps.TwitterClientR3.models;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
 
-import com.codepath.apps.TwitterClientR3.MyDatabase;
+import com.codepath.apps.TwitterClientR3.db.MyDatabase;
 import com.raizlabs.android.dbflow.annotation.Column;
 import com.raizlabs.android.dbflow.annotation.ForeignKey;
 import com.raizlabs.android.dbflow.annotation.PrimaryKey;

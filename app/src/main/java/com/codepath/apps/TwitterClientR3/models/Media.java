@@ -62,7 +62,7 @@ public class Media {
             media.type = jsonObject.getString("type");
             //[video_info][variants][0][url]
 
-            if (media.type == "video") {
+            if (media.type.equals("video")) {
                 JSONObject videoInfo = jsonObject.getJSONObject("video_info");
                 JSONArray variants = videoInfo.getJSONArray("variants");
                 media.url = ((JSONObject) variants.get(0)).getString("url");

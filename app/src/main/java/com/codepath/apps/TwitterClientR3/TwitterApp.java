@@ -1,5 +1,6 @@
 package com.codepath.apps.TwitterClientR3;
 
+import com.codepath.apps.TwitterClientR3.net.TwitterClient;
 import com.raizlabs.android.dbflow.config.FlowConfig;
 import com.raizlabs.android.dbflow.config.FlowLog;
 import com.raizlabs.android.dbflow.config.FlowManager;

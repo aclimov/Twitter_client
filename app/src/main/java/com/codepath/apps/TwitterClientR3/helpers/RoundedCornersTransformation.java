@@ -1,4 +1,4 @@
-package com.codepath.apps.TwitterClientR3;
+package com.codepath.apps.TwitterClientR3.helpers;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapShader;
